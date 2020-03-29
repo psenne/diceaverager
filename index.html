@@ -7,32 +7,17 @@
     <title>Dice Averager</title>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"
         integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+
+    <!-- using this pretty awesome dice parser / roller from zirak (http://zirak.me) -->
+    <script src="/parsePrecedence.js"></script>
     <script>
-        function MultiDiceRoll(d, n) {
-            var total = 0;
-            for (var i = 0; i < n; i++) {
-                total += SingleDiceRoll(d);
-            }
-            return total;
-        }
-
-        function SingleDiceRoll(d) {
-            return Math.round(Math.random() * (d - 1) + 1);
-        }
-
         function GetAvgDice(f) {
             var total = 0;
             var calc = "";
             const iterations = 50000;
-            var [a, b] = f.split("d");
-            var [y, z] = b.split(/([+-]\d+)/g);
-
-            n = parseInt(a) || 1;
-            d = parseInt(y);
-            m = parseInt(z) || 0;
 
             for (var i = 0; i < iterations; i++) {
-                total += MultiDiceRoll(d, n) + m;
+                total += parsePrecedence(f).total;
             }
 
             calc = Math.round(total * 10 / iterations) / 10
