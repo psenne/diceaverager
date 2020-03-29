@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dice Averager</title>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script>
+        function MultiDiceRoll(d, n) {
+            var total = 0;
+            for (var i = 0; i < n; i++) {
+                total += SingleDiceRoll(d);
+            }
+            return total;
+        }
+
+        function SingleDiceRoll(d) {
+            return Math.round(Math.random() * (d - 1) + 1);
+        }
+
+        function GetAvgDice(f) {
+            var total = 0;
+            var calc = "";
+            const iterations = 50000;
+            var [a, b] = f.split("d");
+            var [y, z] = b.split(/([+-]\d+)/g);
+
+            n = parseInt(a) || 1;
+            d = parseInt(y);
+            m = parseInt(z) || 0;
+
+            for (var i = 0; i < iterations; i++) {
+                total += MultiDiceRoll(d, n) + m;
+            }
+
+            calc = Math.round(total * 10 / iterations) / 10
+            return isNaN(calc) ? "Invalid dice format. Example 1d4+4." : calc;
+        }
+
+        $(function () {
+            $('#input').on({
+                "keydown": ev => {
+                    if (ev.key !== "Enter") {
+                        $('#output').val('');
+                    }
+                },
+                "change": ev => {
+                    ev.preventDefault();
+                    var input = $('#input').val();
+                    $('#output').val(GetAvgDice(input));
+                }
+            });
+        })
+    </script>
+    <link rel="stylesheet" href="https://necolas.github.io/normalize.css/8.0.1/normalize.css">
+    <style>
+        body {
+            background: #333333;
+            color: #dddddd;
+            font-family: 'Consolas', 'Courier New', Courier, monospace;
+            font-size: 16px;
+            user-select: none;
+        }
+
+        header {
+            background-color: #00000080;
+            padding: 1rem 2rem;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.3rem;
+        }
+
+        header h2 {
+            margin: 0;
+            font-style: italic;
+            font-size: 0.8rem;
+        }
+
+        main {
+            padding: 2rem 2rem;
+
+        }
+
+        main label {
+            min-width: 6em;
+            display: inline-block;
+            text-align: right;
+        }
+
+        main input {
+            border: 0;
+            background: inherit;
+            color: #ddd;
+            margin: 0 .5em 0 0;
+            width: 5em;
+        }
+
+        main #input {
+            border-bottom: 1px solid yellow;
+        }
+
+        main #output {
+            border-bottom: 1px solid cornflowerblue;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Dice averager</h1>
+        <h2>:: get the average for dice combos ::</h2>
+    </header>
+    <main>
+        <p>
+            <label for="input">Input:</label>
+            <input type="text" name="input" id="input"
+                title="usage: NdD+M, where N = number of dice, D = sided dice, M = added modifier"
+                placeholder="ex: 1d8+4 is 11.5">
+        </p>
+        <p>
+            <label for="output">Output:</label> <input type="text" id="output" disabled>
+        </p>
+    </main>
+</body>
+
+</html>
