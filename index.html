@@ -9,19 +9,20 @@
         integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 
     <!-- using this pretty awesome dice parser / roller from zirak (http://zirak.me) -->
-    <script src="/parsePrecedence.js"></script>
+    <script src="./parsePrecedence.js"></script>
     <script>
         function GetAvgDice(f) {
             var total = 0;
-            var calc = "";
             const iterations = 50000;
-
-            for (var i = 0; i < iterations; i++) {
-                total += parsePrecedence(f).total;
+            try {
+                for (var i = 0; i < iterations; i++) {
+                    total += parsePrecedence(f).total;
+                }
+                return Math.round(total * 10 / iterations) / 10
             }
-
-            calc = Math.round(total * 10 / iterations) / 10
-            return isNaN(calc) ? "Invalid dice format. Example 1d4+4." : calc;
+            catch (e) {
+                $('#errors').text(`${e}. Format must be in NdS+M, where N = number of dice, S = sided dice, M = added modifier.`);
+            }
         }
 
         $(function () {
@@ -29,12 +30,15 @@
                 "keydown": ev => {
                     if (ev.key !== "Enter") {
                         $('#output').val('');
+                        $('#errors').text('');
                     }
                 },
                 "change": ev => {
                     ev.preventDefault();
                     var input = $('#input').val();
-                    $('#output').val(GetAvgDice(input));
+                    if (input) {
+                        $('#output').val(GetAvgDice(input));
+                    }
                 }
             });
         })
@@ -81,7 +85,6 @@
             background: inherit;
             color: #ddd;
             margin: 0 .5em 0 0;
-            width: 5em;
         }
 
         main #input {
@@ -90,6 +93,14 @@
 
         main #output {
             border-bottom: 1px solid cornflowerblue;
+        }
+
+        #errors {
+            position: absolute;
+            top: 200px;
+            left: calc(50% - 250px);
+            width: 500px;
+            color: darkorange;
         }
     </style>
 </head>
@@ -103,13 +114,14 @@
         <p>
             <label for="input">Input:</label>
             <input type="text" name="input" id="input"
-                title="usage: NdD+M, where N = number of dice, D = sided dice, M = added modifier"
+                title="usage: NdS+M, where N = number of dice, S = sided dice, M = added modifier"
                 placeholder="ex: 1d8+4 is 11.5">
         </p>
         <p>
             <label for="output">Output:</label> <input type="text" id="output" disabled>
         </p>
     </main>
+    <div id="errors"></div>
 </body>
 
 </html>

@@ -43,16 +43,20 @@ var parsePrecedence = (function () {
                 if (rolls > 100) {
                     throw new Error('Maximum roll count is 100');
                 }
+                try {
+                    var ret = 0, roll;
+                    while (rolls--) {
+                        roll = Math.floor(Math.random() * sides) + 1;
 
-                var ret = 0, roll;
-                while (rolls--) {
-                    roll = Math.floor(Math.random() * sides) + 1;
+                        ret += roll;
+                        rollsSoFar.push(roll);
+                    }
 
-                    ret += roll;
-                    rollsSoFar.push(roll);
+                    return ret;
                 }
-
-                return ret;
+                catch{
+                    throw new Error("Invalid format")
+                }
             }
         }
     };
